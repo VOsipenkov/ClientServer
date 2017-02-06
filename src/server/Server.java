@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -73,7 +72,7 @@ public class Server {
                         writer.flush();
 
                         while (true) {
-                            if (socket.isConnected()) {//TODO needs to detect, that connection closed.
+                            if (socket.isConnected()) {
                                 System.out.println(
                                         "Connection with " + clientName + " closed successfully");
                                 break;

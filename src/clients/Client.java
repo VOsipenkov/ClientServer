@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
- * Client Version 2
+ * Client Version 3
  * 
  * @author 21cmPC
  *

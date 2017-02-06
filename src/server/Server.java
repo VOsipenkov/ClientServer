@@ -8,9 +8,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 /**
- * Server Server version 2.
+ * Server Server version 3.
  * 
  * @author 21cmPC
  */
@@ -30,6 +31,7 @@ public class Server {
      */
     private Server() throws IOException {
         serverSocket = new ServerSocket(SERVER_PORT);
+        cleanLogFile();
         System.err.println("Server started");
     }
 
@@ -64,7 +66,7 @@ public class Server {
                         writer.println(generatePhrase());
                         writer.flush();
                         String clientName = reader.readLine();
-                        System.out.println(clientName);
+                        System.out.println(clientName + " exchange started");
                         log(clientName);
 
                         clientSocket.close();
@@ -81,7 +83,19 @@ public class Server {
     }
 
     private void log(String clientName) throws IOException {
-        Files.write(Paths.get(LOG_FILE_PATH), clientName.getBytes());
+        clientName += "\n";
+        Files.write(Paths.get(LOG_FILE_PATH), clientName.getBytes(), StandardOpenOption.APPEND,
+                StandardOpenOption.CREATE);
+    }
+
+    private void cleanLogFile() {
+        if (Files.exists(Paths.get(LOG_FILE_PATH))) {
+            try {
+                Files.delete(Paths.get(LOG_FILE_PATH));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private String generatePhrase() throws IOException {
@@ -90,15 +104,6 @@ public class Server {
         int index = (int) (Math.random() * lines.length);
 
         return lines[index];
-    }
-
-    /**
-     * Deprecated
-     * 
-     * @return
-     */
-    private String generateNameForClient() {
-        return "Client" + clientIndex++;
     }
 
     public static void main(String[] args) throws IOException {

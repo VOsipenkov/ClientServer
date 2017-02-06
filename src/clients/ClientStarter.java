@@ -13,7 +13,6 @@ public class ClientStarter {
         for (int i = 0; i < 10; i++) {
             client = new Client(ClientNameGenerator.getName(), IP_SERVER, PORT);
             client.start();
-
         }
 
     }

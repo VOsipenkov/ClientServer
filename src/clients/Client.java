@@ -8,36 +8,44 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
- * Client Version 3
+ * Client Version 4
  * 
  * @author 21cmPC
- *
  */
 public class Client {
-	String clientName;
-	String ipAddress;
-	int port;
+    String clientName;
+    String ipAddress;
+    int port;
 
-	public Client(String clientName, String ipAddress, int port) {
-		this.clientName = clientName;
-		this.ipAddress = ipAddress;
-		this.port = port;
-	}
+    public Client(String clientName, String ipAddress, int port) {
+        this.clientName = clientName;
+        this.ipAddress = ipAddress;
+        this.port = port;
+    }
 
-	public void start() throws UnknownHostException, IOException {
-		Socket socket = new Socket(ipAddress, port);
-		System.err.println("Client started");
-		BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		System.out.println(reader.readLine());
+    public void start() throws UnknownHostException, IOException {
+        Socket socket = new Socket(ipAddress, port);
 
-		PrintWriter writer = new PrintWriter(socket.getOutputStream());
-		writer.write(getClientName());
-		writer.flush();
+        System.err.println("Client started");
+        int millis = (int) (Math.random() * 20) * 1000;
+        System.out.println(getClientName() + " :" + millis / 1000);
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-		socket.close();
-	}
+        //------------>request
+        PrintWriter writer = new PrintWriter(socket.getOutputStream());
+        writer.write(getClientName());
+        writer.flush();
 
-	public String getClientName() {
-		return clientName;
-	}
+        //<---------response
+        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        socket.close();
+    }
+
+    public String getClientName() {
+        return clientName;
+    }
 }

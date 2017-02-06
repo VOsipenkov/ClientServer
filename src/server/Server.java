@@ -6,12 +6,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 /**
- * Server Server version 3.
+ * Server Server version 4.
  * 
  * @author 21cmPC
  */
@@ -57,27 +58,33 @@ public class Server {
                 @Override
                 public void run() {
                     Socket clientSocket = socket;
+
                     PrintWriter writer;
                     BufferedReader reader;
                     try {
                         writer = new PrintWriter(socket.getOutputStream());
                         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-                        writer.println(generatePhrase());
-                        writer.flush();
                         String clientName = reader.readLine();
                         System.out.println(clientName + " exchange started");
                         log(clientName);
 
-                        clientSocket.close();
-                        if (clientSocket.isClosed()) {
-                            System.out.println("Connection with " + clientName + " closed successfully");
+                        writer.println(generatePhrase());
+                        writer.flush();
+
+                        while (true) {
+                            if (socket.isConnected()) {//TODO needs to detect, that connection closed.
+                                System.out.println(
+                                        "Connection with " + clientName + " closed successfully");
+                                break;
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             });
+
             newClientThread.start();
         }
     }
@@ -103,7 +110,7 @@ public class Server {
         String[] lines = fileContent.split("\n+");
         int index = (int) (Math.random() * lines.length);
 
-        return lines[index];
+        return lines[index].trim();
     }
 
     public static void main(String[] args) throws IOException {
